@@ -1,5 +1,4 @@
 <?php
-
 $help = <<<MANPAGE
 by Hugo Ferreira
 http://webapp.house
@@ -24,8 +23,6 @@ USE: ------------------------------------------------
 	> help
 
 MANPAGE;
-
-	require_once ( "Request.php");
 
 	session_start();
 
@@ -157,7 +154,7 @@ MANPAGE;
 
 	}
 		
-	if ( Xlib_Request::isPost ( ) ) {
+	if ( !empty ( $_POST ) ) {
 		
 		$command = preg_replace('/;\s*$/i','',Xlib_Request::get("command"));
 		$command = preg_replace('/^mysql>\s*/i','',$command);
