@@ -153,6 +153,23 @@ MANPAGE;
 		print $headerLine ;
 
 	}
+
+	function printQueryResultBlock ( $result ) {
+
+		$titleList  = array_keys ( $result[0] );
+		$columnSize = 0;
+		$lineCount  = 1 ;
+
+		foreach ( $titleList as $tit ) if ( strlen ( $tit ) > $columnSize ) $columnSize = strlen ( $tit );
+
+		foreach ( $result as $tuple ) {
+			print "*************************** ".$lineCount++.". row ***************************\n" ;
+			foreach ( $tuple as $field => $value ) {
+				print str_pad ( $field . ": " , $columnSize+2 , " " , STR_PAD_LEFT ) . $value . "\n" ;
+			} 
+		}
+
+	}
 		
 	if ( !empty ( $_POST ) ) {
 
@@ -214,10 +231,16 @@ MANPAGE;
 		} else if ( preg_match ( '/^select|show|describe/i' , $command ) ) {
 			
 			try {
-
 				reuse($command);
-				$result = $mysqli->fetchAll($command);
-				printQueryResult ( $result ) ;
+				
+				if ( preg_match ( '/\\\G$/' , $command ) ) {
+					$command = preg_replace ( '/\\\G$/' , '' , $command );
+					$result  = $mysqli->fetchAll($command);
+					printQueryResultBlock ( $result ) ;
+				} else {
+					$result = $mysqli->fetchAll($command);
+					printQueryResult ( $result ) ;
+				}
 
 			} catch (Exception $e) {
 				printColor ( $e->getMessage() , "red" ) ;
