@@ -195,9 +195,26 @@ MANPAGE;
 			}
 		} else if ( preg_match ( '/^session/i' , $command ) ) {
 			var_dump ( $_SESSION );
+		} else if ( preg_match ( '/^update|alter|delete|drop|create|insert/i' , $command ) ) {
+
+			try {
+				
+				reuse($command);
+				$result = $mysqli->query($command);
+				if ( $result ) {
+					print "Query OK, ".$mysqli->affected_rows." rows affected";
+				} else {
+					print "Error: " . $mysqli->error;
+				}
+
+			} catch (Exception $e) {
+				printColor ( $e->getMessage() , "red" ) ;
+			}
+
 		} else if ( preg_match ( '/^select|show|describe/i' , $command ) ) {
 			
 			try {
+
 				reuse($command);
 				$result = $mysqli->fetchAll($command);
 				printQueryResult ( $result ) ;
@@ -347,7 +364,7 @@ MANPAGE;
 	}
 
 	function reuse ( command ) {
-		document.getElementById("command").value = command;
+		document.getElementById("command").value = "mysql> " + command;
 	}
 
 	function focusOnCommand() {
