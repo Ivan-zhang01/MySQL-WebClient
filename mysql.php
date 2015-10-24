@@ -155,8 +155,8 @@ MANPAGE;
 	}
 		
 	if ( !empty ( $_POST ) ) {
-		
-		$command = preg_replace('/;\s*$/i','',Xlib_Request::get("command"));
+
+		$command = preg_replace('/;\s*$/i','',$_POST["command"]);
 		$command = preg_replace('/^mysql>\s*/i','',$command);
 
 		if ( $_SESSION['CONNECTION_PARAMS']['connected'] ) connect();
@@ -212,8 +212,6 @@ MANPAGE;
 		
 		exit;
 	}
-
-
 
 ?><!DOCTYPE html>
 <html lang="en">
@@ -303,7 +301,6 @@ MANPAGE;
 
 	document.getElementById("command").onkeyup = function ( e ) {
 	    var event = window.event ? window.event : e;
-	    console.log(event.keyCode)
 	    if ( event.keyCode === 38 ) { // up
 	    	if ( queryHistory.length >= queryHistoryPointer+2 ) {
 		    	queryHistoryPointer += 1 ;
