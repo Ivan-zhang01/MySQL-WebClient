@@ -8,23 +8,42 @@ THIS IS A WEB BASED MYSQL COMMAND LINE TOOL.
 USE TO HELP IN WEB DEVELOPMENT
 
 USE: ------------------------------------------------
-* connect to a database:
+
+* CONNECT TO A DATABASE:
 	- connections are not persistent, once your connection is done successfully, we'll store data on session to use in futher connections.
-	> connect -uuser [-hhost] [-ppassword] [databasename] 
+	&gt; connect -uuser [-hhost] [-ppassword] [databasename] 
 	you can use word 'mysql' instead of 'connect' too as you used to do in bash to open a mysql connection
-* disconnect from a mysql server:
-	> disconnect
-* run php command:
-	> php var_dump(\$_SESSION);
-* query database:
+
+* DISCONNECT FROM A MYSQL SERVER:
+	&gt; disconnect
+
+* RUN PHP COMMAND:
+	&gt; php var_dump(\$_SESSION);
+
+* CLEAR SCREEN OUTPUT
+	&gt; clear
+
+* DUMP SESSION
+	&gt; session
+
+* QUERY DATABASE:
 	you can run queries as you used to do in mysql command line tool
-	> show databases;
-* getting help:
-	> help
+	&gt; show databases;
+
+* GETTING HELP:
+	&gt; help
+
+* USING CODE GENERATORS
+	&gt; codegen &lt;CODEGEN_NAME&gt; &lt;TABLE_NAME&gt; &lt;ADDITIONAL_PARAMS&gt;
 
 MANPAGE;
 
 	session_start();
+
+	interface codegen {
+		public function __construct ( $db ) ;
+		public function help ( ) ;
+	}
 
 	class Model extends mysqli {
 
@@ -201,6 +220,28 @@ MANPAGE;
 			} catch (Exception $e) {
 				print "error: ".$e->getMessage();
 			}
+		} else if ( preg_match ( '/^codegen\s*/i' , $command ) ) {
+
+			try {
+
+				if ( !preg_match ( '/^(codegen)\s+([^\s]+)\s*(.*)/i' , $command , $params ) ) {
+					throw new Exception ( "Wrong syntax, use: &gt; codegen &lt;CODEGEN_NAME&gt; &lt;TABLE_NAME&gt; &lt;ADDITIONAL_PARAMS&gt;" );
+				}
+
+				$className = $params[2];
+
+				require_once "./" . $className . "/" . $className . ".php" ;
+
+				$Object = new $className ( $mysqli ) ;
+
+				echo "= BEGIN CODE =============================================================================\n";
+				echo $Object->getOutput ( $params[3] );
+				echo "\n= END CODE =============================================================================";
+
+			} catch (Exception $e) {
+				print "error: ".$e->getMessage();
+			}			
+
 		} else if ( preg_match ( '/^use/i' , $command ) ) {
 			$database = preg_replace ( '/^use\s+/i' , '' , $command ) ;
 			$mysqli = new Model ( $_SESSION['CONNECTION_PARAMS']['host'] , $_SESSION['CONNECTION_PARAMS']['user'] , $_SESSION['CONNECTION_PARAMS']['pass'] , $database );
