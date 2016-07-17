@@ -1,0 +1,24 @@
+<?php 
+
+echo "<?php\n";
+?>
+
+class <?=$modelName?> {
+
+<? foreach ( $fieldList as $field ) : ?>
+	protected $<?=$field['Varname']?>;
+<? endforeach ?>
+
+<? foreach ( $fieldList as $field ) : ?>
+
+	public function get<?=ucwords($field['Varname'])?> ( ) {
+		return $this-><?=$field['Varname']?>;
+	}
+
+	public function set<?=ucwords($field['Varname'])?> ( $<?=$field['Varname']?> ) {
+		$this-><?=$field['Varname']?> = $<?=$field['Varname']?> ;
+		return $this;
+	}
+<? endforeach ?>
+		
+}

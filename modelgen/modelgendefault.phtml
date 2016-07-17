@@ -1,0 +1,73 @@
+<?php 
+
+echo "<?php\n";
+?>
+
+<? foreach ( $fieldList as $field ) : ?>
+	<? $fieldNameList[] = $field['Field'] ?>
+	<? $bindList[] = "?" ?>
+	<? if ( $field['Field'] != $primaryKey ) : ?>
+		<? $fieldNameEditList[] = $field['Field'] . " = ? " ?>
+	<? endif ?>
+<? endforeach ?> 
+
+class Model_<?=$modelName?> {
+
+	private $tableName = "<?=$this->tableName?>";
+	private $primaryKey = "<?=$primaryKey?>";
+
+	public function create ( $data ) {
+
+		$query = "INSERT INTO <?=$this->tableName?> ( <?=implode(', ',$fieldNameList)?> ) VALUES ( <?=implode(', ',$bindList)?> )";
+
+		$bindList = [
+<? foreach ( $fieldList as $field ) : ?>
+			$data['<?=$field['Field']?>'],
+<? endforeach ?> 
+		];
+
+		$result = $this->db->query( $query , $bindList ) ;
+
+		return $result ;
+
+	}
+
+	public function edit ( ) {
+
+		$query = "UPDATE <?=$this->tableName?> SET <?=implode ( "," , $fieldNameEditList )?> WHERE <?=$primaryKey?> = ?";
+
+		$bindList = [
+<? foreach ( $fieldList as $field ) : ?>
+<? if ( $field['Field'] === $primaryKey ) continue ?>
+			$data['<?=$field['Field']?>'],
+<? endforeach ?> 
+			$data['<?=$primaryKey?>'],
+		];
+
+		$result = $this->db->query( $query , $bindList ) ;
+
+		return $result ;
+
+	}
+
+	public function delete ( $id ) {
+		$query = "DELETE FROM <?=$this->tableName?> WHERE <?=$primaryKey?> = ?" ;
+		$result = $this->db->query ( $query , [$id] );
+		return $result;
+	}
+
+	public function list ( $id = null ) {
+		
+		//$query = "SELECT <?=implode(", ",$fieldNameList)?> FROM <?=$this->tableName?>";
+		$query = "SELECT <?="\n\t\t\t\t".implode(",\n\t\t\t\t",$fieldNameList)."\n\t\t\t\t"?> FROM <?=$this->tableName?>";
+		$result = $this->db->fetchAll ( $query );
+		
+		foreach ( $result as $res ) {
+
+		}
+
+		return $result;
+
+	}
+		
+}

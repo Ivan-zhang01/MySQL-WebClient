@@ -1,6 +1,6 @@
 <?php
 
-class formgen implements codegen {
+class entitygen implements codegen {
 
 	private $db ;
 	private $tableName ; 
@@ -9,7 +9,6 @@ class formgen implements codegen {
 	private $dictionary = array(
 		'descricao' => "descrição",
 	);
-
 
 	public function __construct ( $db ) {
 		$this->db = $db ;
@@ -23,6 +22,7 @@ class formgen implements codegen {
 
 		$this->tableName = $result[1];
 		$this->aditionalParams = $result[2];
+		$modelName = ucwords ( $this->getVarName ( $this->tableName ) );
 
 		$query = "DESCRIBE " . $this->tableName ;
 		$fieldList = $this->db->fetchAll ($query);
@@ -30,11 +30,9 @@ class formgen implements codegen {
 		foreach ( $fieldList as $key => $field ) {
 			$fieldList[$key]['Label'] = $this->makeLabel ( $field['Field'] ) ;
 			$fieldList[$key]['Inputtype'] = $this->getType ( $field ) ;
-			$fieldList[$key]['Maxlength'] = $this->getMaxLength ( $field['Type'] );
-			$fieldList[$key]['Inputid'] = $this->getInputId ( $field['Field'] );
-			$fieldList[$key]['Requiredattribute'] = $this->getRequiredAttr ( $field['Null'] );
+			$fieldList[$key]['Varname'] = $this->getVarName ( $field['Field'] );
 		}
-		
+
 		ob_start();
 			include $this->config['default_template'] ;
 			$result = ob_get_contents();
@@ -44,22 +42,13 @@ class formgen implements codegen {
 
 	}
 
-	public function getRequiredAttr ( $null ) {
-		if ( $null = "YES" ) {
-			return "";
-		} else {
-			return " required=\"required\" ";
-		}
-	}
-
-	public function getInputId ( $field ) {
-		$field = strtolower($field);
-		$field = str_replace("_", "-", $field );
-		return "field-".$field;
-	}
-
-	public function getMaxLength ( $fieldType ) {
-		return preg_replace ( '/.*\(([0-9]+)\).*/' , "$1" , $fieldType ) ;
+	public function getVarName ( $field ) {
+		$field = str_replace ( "_" , " " , $field );
+		$field = strtolower( $field );
+		$field = ucwords( $field );
+		$field = str_replace ( " " , "" , $field );
+		$field[0] = strtolower($field[0]);
+		return $field;
 	}
 
 	public function getType ( $field ) {
@@ -96,7 +85,7 @@ $help = <<<MANPAGE
 FORM GENERATOR
 
 USE: 
-&gt; codegen formgen &lt;tablename&gt; &lt;aditional params&gt;
+&gt; entity modelgen &lt;tablename&gt; &lt;aditional params&gt;
 MANPAGE;
 
 		return $help;

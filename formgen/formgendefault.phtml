@@ -1,16 +1,16 @@
 <? foreach ( $fieldList as $field ) : ?>
 	
 <? if ( $field['Key'] === "PRI" ) : ?>	
-<input type="hidden" name="<?=$field['Field']?>" id="field-<?=$field['Field']?>" value="" />
+<input type="hidden" name="<?=$field['Field']?>" id="<?=$field['Inputid']?>" value="" />
 <? continue ?>
 <? endif ?>
 
 <div class="form-group">
-	<label for="field-<?=$field['Field']?>"><?=$field['Label']?>:</label>
+	<label for="<?=$field['Inputid']?>"><?=$field['Label']?>:</label>
 <? if ( $field['Inputtype'] === "textarea" ) : ?>
-	<textarea name="<?=$field['Field']?>" maxlength="65535" class="form-control" id="field-<?=$field['Field']?>" placeholder="<?=$field['Label']?>" ></textarea>
+	<textarea name="<?=$field['Field']?>" <?=$field['Requiredattribute']?> maxlength="65535" class="form-control" id="<?=$field['Inputid']?>" placeholder="<?=$field['Label']?>" ></textarea>
 <? else : ?>
-	<input value="" name="<?=$field['Field']?>" type="<?=$field['Inputtype']?>" maxlength="<?=$field['Maxlength']?>" class="form-control" id="field-<?=$field['Field']?>" placeholder="<?=$field['Label']?>" />
+	<input value="" name="<?=$field['Field']?>" type="<?=$field['Inputtype']?>" <?=$field['Requiredattribute']?> maxlength="<?=$field['Maxlength']?>" class="form-control" id="<?=$field['Inputid']?>" placeholder="<?=$field['Label']?>" />
 <? endif ?>
 
 </div>

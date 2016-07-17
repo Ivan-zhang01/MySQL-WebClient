@@ -7,7 +7,7 @@ http://webapp.house
 THIS IS A WEB BASED MYSQL COMMAND LINE TOOL.
 USE TO HELP IN WEB DEVELOPMENT
 
-USE: ------------------------------------------------
+USE: --------------------------------------------------------------------------------------
 
 * CONNECT TO A DATABASE:
 	- connections are not persistent, once your connection is done successfully, we'll store data on session to use in futher connections.
@@ -35,6 +35,9 @@ USE: ------------------------------------------------
 
 * USING CODE GENERATORS
 	&gt; codegen &lt;CODEGEN_NAME&gt; &lt;TABLE_NAME&gt; &lt;ADDITIONAL_PARAMS&gt;
+
+------------------------------------------------------------------------------------------
+
 
 MANPAGE;
 
@@ -225,7 +228,17 @@ MANPAGE;
 			try {
 
 				if ( !preg_match ( '/^(codegen)\s+([^\s]+)\s*(.*)/i' , $command , $params ) ) {
-					throw new Exception ( "Wrong syntax, use: &gt; codegen &lt;CODEGEN_NAME&gt; &lt;TABLE_NAME&gt; &lt;ADDITIONAL_PARAMS&gt;" );
+					$errorMessage = "\nUse:\n&gt; codegen &lt;CODEGEN_NAME&gt; &lt;TABLE_NAME&gt; &lt;ADDITIONAL_PARAMS&gt;\n";
+					$errorMessage .= "Available code generators are:\n";
+					$fp = opendir("./");
+					while ( $filename = readdir($fp)){
+						if ( preg_match ( '/gen$/' , $filename ) && $confFile = realpath ( "./$filename/config.php" ) ) {
+							$conf = include $confFile ;
+							$errorMessage .= "\t".$filename."\t\t- ".$conf['description']."\n";
+						}
+					}
+					die($errorMessage);
+					// throw new Exception ( $errorMessage );
 				}
 
 				$className = $params[2];
